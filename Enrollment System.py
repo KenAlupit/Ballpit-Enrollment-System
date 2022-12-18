@@ -1,7 +1,9 @@
-import pandas as pd
+import ctypes
 import os
 import csv
 import re
+import shutil
+
 
 studentProfile = []
 correctDate = False
@@ -19,8 +21,17 @@ print(r"""
 ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝     ╚═╝   ╚═╝                                                     
                 Enrollment System""")
 
+if not os.path.isdir('.Backup'):
+    os.mkdir(".Backup")
+    FILE_ATTRIBUTE_HIDDEN = 0x02
+    ret = ctypes.windll.kernel32.SetFileAttributesW(".Backup", FILE_ATTRIBUTE_HIDDEN)
+    shutil.copy('1stSemesterSubjects.csv', '.Backup')
+
 if not os.path.isfile('StudentProfile.csv'):
    open('StudentProfile.csv', 'a')
+
+if not os.path.isfile('1stSemesterSubjects.csv'):
+   shutil.copy('.Backup/1stSemesterSubjects.csv', os.getcwd())
 
 def searchSubjects(subject):
     with open('1stSemesterSubjects.csv', 'r') as file:
