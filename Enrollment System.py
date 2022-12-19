@@ -176,14 +176,16 @@ def Main_Menu():
                 invalidInput = True
                 print("Invalid Input\n")
 
+File_Check_And_Recover('StudentProfile.csv')
+File_Check_And_Recover('1stSemesterSubjects.csv')
+File_Check_And_Recover('EnrollmentReferenceNumbers.csv')
+
 if not os.path.isdir('.Backup'):
     os.mkdir(".Backup")
     FILE_ATTRIBUTE_HIDDEN = 0x02
     ret = ctypes.windll.kernel32.SetFileAttributesW(".Backup", FILE_ATTRIBUTE_HIDDEN)
     Backup()
 
-File_Check_And_Recover('StudentProfile.csv')
-File_Check_And_Recover('1stSemesterSubjects.csv')
-File_Check_And_Recover('EnrollmentReferenceNumbers.csv')
+
 
 Main_Menu()
