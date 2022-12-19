@@ -182,6 +182,7 @@ def Main_Menu():
                             tuitionFee = Search_Subjects("BMMA", '2ndSemesterSubjects.csv')
                 enrollmentReferenceNumber = [Reference_Number_Generator(), tuitionFee]
                 studentProfile.append("Not Enrolled")
+                studentProfile.append(enrollmentReferenceNumber[0])
                 print("Your enrollment reference number to be presented for the payment: " + enrollmentReferenceNumber[0])
 
                 Save_To_CSV('EnrollmentReferenceNumbers.csv', enrollmentReferenceNumber)
@@ -205,7 +206,14 @@ def Main_Menu():
                 Main_Menu()
             case 'p' | 'P':
                 invalidInput = False
-                pass
+                userReference = (input("Input your reference number: "))
+                
+                with open('EnrollmentReferenceNumbers.csv', 'r') as file:
+                    reader = csv.reader(file)
+                    for row in reader:
+                        if row[0] == userReference: 
+                            print(row[1]) 
+                
             case _:
                 invalidInput = True
                 print("Invalid Input\n")
