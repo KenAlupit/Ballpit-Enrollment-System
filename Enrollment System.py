@@ -204,6 +204,7 @@ def Main_Menu():
                         print(row)
                 Backup()
                 Main_Menu()
+                
             case 'p' | 'P':
                 invalidInput = False
                 userReference = (input("Input your reference number: "))
@@ -211,8 +212,19 @@ def Main_Menu():
                 with open('EnrollmentReferenceNumbers.csv', 'r') as file:
                     reader = csv.reader(file)
                     for row in reader:
+                        
                         if row[0] == userReference: 
-                            print(row[1]) 
+                            print("Your total amount balance to pay is:", row[1])
+                            userPayment = int((input("Input your payment: "))) 
+                            
+                            if userPayment < int(row[1]):
+                                print("Payment error! Your payment ips insufficient!")
+                                
+                            elif userPayment > int(row[1]):
+                                print("Payment Successful! Here is your change: ", userPayment - int(row[1]))
+                                   
+                            else: print("Payment Successful! ")
+                        
                 
             case _:
                 invalidInput = True
