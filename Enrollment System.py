@@ -105,7 +105,14 @@ def Main_Menu():
         match input("Input: "):
             case 'e' | 'E':
                 invalidInput = False
-                studentProfile.append(input("Name: "))
+                studentProfile.append(input("First Name: "))
+                userMiddleName = input("Middle Name (0 if not applicable): ")
+                match userMiddleName:
+                    case 0:
+                        studentProfile.append("N/A")
+                    case _:
+                        studentProfile.append(userMiddleName)
+                studentProfile.append(input("Last Name: "))
                 while not correctDate:
                     userBirthdate = input("Birthdate (mm/dd/yyyy): ")
                     #Checks whether the input is the correct date format
@@ -164,16 +171,16 @@ def Main_Menu():
                         case _:
                             invalidSemester = True
                             print("Invalid Input\n")
-                if studentProfile[4] == "1st Sem":
-                    match studentProfile[3]:
+                if studentProfile[6] == "1st Sem":
+                    match studentProfile[5]:
                         case "BSCS":
                             tuitionFee = Search_Subjects("BSCS", '1stSemesterSubjects.csv')
                         case "BSEMC":
                             tuitionFee = Search_Subjects("BSEMC", '1stSemesterSubjects.csv')
                         case "BMMA":
                             tuitionFee = Search_Subjects("BMMA", '1stSemesterSubjects.csv')
-                if studentProfile[4] == "2nd Sem":
-                    match studentProfile[3]:
+                if studentProfile[6] == "2nd Sem":
+                    match studentProfile[5]:
                         case "BSCS":
                             tuitionFee = Search_Subjects("BSCS", '2ndSemesterSubjects.csv')
                         case "BSEMC":
@@ -211,21 +218,15 @@ def Main_Menu():
                 
                 with open('EnrollmentReferenceNumbers.csv', 'r') as file:
                     reader = csv.reader(file)
-                    for row in reader:
-                        
+                    for row in reader:                       
                         if row[0] == userReference: 
                             print("Your total amount balance to pay is:", row[1])
-                            userPayment = int((input("Input your payment: "))) 
-                            
+                            userPayment = int((input("Input your payment: ")))                            
                             if userPayment < int(row[1]):
-                                print("Payment error! Your payment ips insufficient!")
-                                
+                                print("Payment error! Your payment ips insufficient!")     
                             elif userPayment > int(row[1]):
-                                print("Payment Successful! Here is your change: ", userPayment - int(row[1]))
-                                   
-                            else: print("Payment Successful! ")
-                        
-                
+                                print("Payment Successful! Here is your change: ", userPayment - int(row[1]))                            
+                            else: print("Payment Successful! ")                
             case _:
                 invalidInput = True
                 print("Invalid Input\n")
