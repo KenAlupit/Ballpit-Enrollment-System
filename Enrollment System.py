@@ -12,8 +12,9 @@ def Reference_Number_Generator():
     with open('EnrollmentReferenceNumbers.csv', 'r') as file:
         reader = csv.reader(file)
         for row in reader:
-            if randomReference == row[1]:
-                randomReference = ''.join(random.choices(string.ascii_letters, k=8))
+            if sum(1 for row in reader) > 0:
+                if randomReference == row[1]:
+                    randomReference = ''.join(random.choices(string.ascii_letters, k=8))
     return randomReference
 
 def Search_Subjects(subject):
@@ -56,6 +57,26 @@ def File_Check_And_Recover(file):
             open(file, 'a')
         else:
              Recover(file)
+
+def Tamper_Check(newFile):
+    backupFile = '.Backup/' + newFile
+    tampered = False
+    with open(backupFile, 'r') as file:
+        reader = csv.reader(file)
+        backupFileRowCount = sum(1 for row in reader)
+    with open(newFile, 'r') as file:
+        reader = csv.reader(file)
+        newFileRowCount = sum(1 for row in reader)
+    if backupFileRowCount < newFileRowCount:
+        tampered = True
+        Recover(backupFile)
+    return tampered
+
+def Save_To_CSV(CSVfile, data):
+    with open(CSVfile, 'a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(data)
+    
 
 def Main_Menu():
     studentProfile = []
@@ -149,10 +170,10 @@ def Main_Menu():
                 enrollmentReferenceNumber = [Reference_Number_Generator(), tuitionFee]
                 studentProfile.append("Not Enrolled")
                 print("Your enrollment reference number to be presented for the payment: " + enrollmentReferenceNumber[0])
-                Backup()
-                with open('EnrollmentReferenceNumbers.csv', 'a', newline='') as file:
-                        writer = csv.writer(file)
-                        writer.writerow(enrollmentReferenceNumber)
+
+                Save_To_CSV('EnrollmentReferenceNumbers.csv', enrollmentReferenceNumber)
+                if Tamper_Check('EnrollmentReferenceNumbers.csv'):
+                    Save_To_CSV('EnrollmentReferenceNumbers.csv', enrollmentReferenceNumber)
 
                 with open('StudentProfile.csv', 'w', newline='') as file:
                     writer = csv.writer(file)
@@ -167,7 +188,7 @@ def Main_Menu():
                     reader = csv.reader(file)
                     for row in reader:
                         print(row)
-                
+                Backup()
                 Main_Menu()
             case 'p' | 'P':
                 invalidInput = False
@@ -185,7 +206,5 @@ if not os.path.isdir('.Backup'):
     FILE_ATTRIBUTE_HIDDEN = 0x02
     ret = ctypes.windll.kernel32.SetFileAttributesW(".Backup", FILE_ATTRIBUTE_HIDDEN)
     Backup()
-
-
 
 Main_Menu()
