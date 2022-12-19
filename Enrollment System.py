@@ -17,8 +17,8 @@ def Reference_Number_Generator():
                     randomReference = ''.join(random.choices(string.ascii_letters, k=8))
     return randomReference
 
-def Search_Subjects(subject):
-    with open('1stSemesterSubjects.csv', 'r') as file:
+def Search_Subjects(subject, subjectFile):
+    with open(subjectFile, 'r') as file:
         reader = csv.reader(file)
         totalTuition = 0
         for row in reader:
@@ -31,6 +31,7 @@ def Search_Subjects(subject):
 def Backup():
     #Backs up every CSV file to a hidden backup folder
     shutil.copy('1stSemesterSubjects.csv', '.Backup')
+    shutil.copy('2ndSemesterSubjects.csv', '.Backup')
     shutil.copy('EnrollmentReferenceNumbers.csv', '.Backup')
     shutil.copy('StudentProfile.csv', '.Backup')
 
@@ -39,6 +40,8 @@ def Recover(file):
     match file:
         case "1stSemesterSubjects.csv":
             shutil.copy('.Backup/1stSemesterSubjects.csv', os.getcwd())
+        case "2ndSemesterSubjects.csv":
+            shutil.copy('.Backup/2ndSemesterSubjects.csv', os.getcwd())
         case "EnrollmentReferenceNumbers.csv":
             shutil.copy('.Backup/EnrollmentReferenceNumbers.csv', os.getcwd())
         case "StudentProfile.csv":
@@ -59,6 +62,8 @@ def File_Check_And_Recover(file):
              Recover(file)
 
 def Tamper_Check(newFile):
+    # Checks if the file content has been tampered with and returns a boolean
+    # 
     backupFile = '.Backup/' + newFile
     tampered = False
     with open(backupFile, 'r') as file:
@@ -102,7 +107,7 @@ def Main_Menu():
                 invalidInput = False
                 studentProfile.append(input("Name: "))
                 while not correctDate:
-                    userBirthdate = input("Birthdate (mm/dd/yyy): ")
+                    userBirthdate = input("Birthdate (mm/dd/yyyy): ")
                     #Checks whether the input is the correct date format
                     if re.match('^[0-1]{1}[0-9]{1}/[1-3]{1}[0-9]{1}/[0-9]{4}$', userBirthdate):
                         studentProfile.append(userBirthdate)
@@ -162,11 +167,19 @@ def Main_Menu():
                 if studentProfile[4] == "1st Sem":
                     match studentProfile[3]:
                         case "BSCS":
-                            tuitionFee = Search_Subjects("BSCS")
+                            tuitionFee = Search_Subjects("BSCS", '1stSemesterSubjects.csv')
                         case "BSEMC":
-                            tuitionFee = Search_Subjects("BSEMC")
+                            tuitionFee = Search_Subjects("BSEMC", '1stSemesterSubjects.csv')
                         case "BMMA":
-                            tuitionFee = Search_Subjects("BMMA")
+                            tuitionFee = Search_Subjects("BMMA", '1stSemesterSubjects.csv')
+                if studentProfile[4] == "2nd Sem":
+                    match studentProfile[3]:
+                        case "BSCS":
+                            tuitionFee = Search_Subjects("BSCS", '2ndSemesterSubjects.csv')
+                        case "BSEMC":
+                            tuitionFee = Search_Subjects("BSEMC", '2ndSemesterSubjects.csv')
+                        case "BMMA":
+                            tuitionFee = Search_Subjects("BMMA", '2ndSemesterSubjects.csv')
                 enrollmentReferenceNumber = [Reference_Number_Generator(), tuitionFee]
                 studentProfile.append("Not Enrolled")
                 print("Your enrollment reference number to be presented for the payment: " + enrollmentReferenceNumber[0])
@@ -199,6 +212,7 @@ def Main_Menu():
 
 File_Check_And_Recover('StudentProfile.csv')
 File_Check_And_Recover('1stSemesterSubjects.csv')
+File_Check_And_Recover('2ndSemesterSubjects.csv')
 File_Check_And_Recover('EnrollmentReferenceNumbers.csv')
 
 if not os.path.isdir('.Backup'):
