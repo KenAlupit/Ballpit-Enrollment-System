@@ -17,16 +17,36 @@ def Reference_Number_Generator():
                     randomReference = ''.join(random.choices(string.ascii_letters, k=8))
     return randomReference
 
-def Search_Subjects(subject, subjectFile):
-    with open(subjectFile, 'r') as file:
+def ID_Number_Generator():
+    #Creates the random enrollment reference number
+    randomID = ''.join(random.choices(string.digits, k=2)) + "-" + ''.join(random.choices(string.digits, k=4))
+    with open('StudentProfile.csv', 'r') as file:
+        reader = csv.reader(file)
+        for row in reader:
+             if sum(1 for row in reader) > 0:
+                if randomID == row[1]:
+                    randomID = ''.join(random.choices(string.digits, k=2)) + "-" + ''.join(random.choices(string.digits, k=4))
+    return randomID
+
+def Semester_Picker(semesterFile, course):
+    with open(semesterFile, 'r') as file:
         reader = csv.reader(file)
         totalTuition = 0
         for row in reader:
-            if row[1] == "General" or row[1] == subject:
+            if row[1] == "General" or row[1] == course:
                 totalTuition += int(row[2])
                 print(row[0], row[1], row[2])
-    print("Total tuiton fee: ", totalTuition)
     return totalTuition
+
+def Search_Subjects(course, semester):
+    match semester:
+        case "1st Sem":
+            tuitionFee = Semester_Picker('1stSemesterSubjects.csv', course)
+        case "2nd Sem":
+            tuitionFee = Semester_Picker('2ndSemesterSubjects.csv', course)
+    print("Total tuiton fee: ", tuitionFee)
+    return tuitionFee
+
 
 def Backup():
     #Backs up every CSV file to a hidden backup folder
@@ -38,13 +58,13 @@ def Backup():
 def Recover(file):
     #Recovers CSV files from the hidden backup folder
     match file:
-        case "1stSemesterSubjects.csv":
+        case '1stSemesterSubjects.csv':
             shutil.copy('.Backup/1stSemesterSubjects.csv', os.getcwd())
-        case "2ndSemesterSubjects.csv":
+        case '2ndSemesterSubjects.csv':
             shutil.copy('.Backup/2ndSemesterSubjects.csv', os.getcwd())
-        case "EnrollmentReferenceNumbers.csv":
+        case 'EnrollmentReferenceNumbers.csv':
             shutil.copy('.Backup/EnrollmentReferenceNumbers.csv', os.getcwd())
-        case "StudentProfile.csv":
+        case 'StudentProfile.csv':
             shutil.copy('.Backup/StudentProfile.csv', os.getcwd())
         case _:
             shutil.copy('.Backup/1stSemesterSubjects.csv', os.getcwd())
@@ -61,27 +81,34 @@ def File_Check_And_Recover(file):
         else:
              Recover(file)
 
-def Tamper_Check(newFile):
-    # Checks if the file content has been tampered with and returns a boolean
-    # 
-    backupFile = '.Backup/' + newFile
-    tampered = False
-    with open(backupFile, 'r') as file:
-        reader = csv.reader(file)
-        backupFileRowCount = sum(1 for row in reader)
-    with open(newFile, 'r') as file:
-        reader = csv.reader(file)
-        newFileRowCount = sum(1 for row in reader)
-    if backupFileRowCount < newFileRowCount:
-        tampered = True
-        Recover(backupFile)
-    return tampered
-
 def Save_To_CSV(CSVfile, data):
     with open(CSVfile, 'a', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(data)
-    
+
+def Payment(reference):
+    invalidPayment = True
+    with open('EnrollmentReferenceNumbers.csv', 'r') as file:
+        reader = csv.reader(file)
+        for row in reader:
+            if reference == row[0]:
+                while invalidPayment:
+                    userPayment = int((input("Input your payment: ")))                            
+                    if userPayment < int(row[1]):
+                        invalidPayment = True
+                        print("Payment error! Your payment ips insufficient!")     
+                    elif userPayment > int(row[1]):
+                        invalidPayment = False
+                        print("Payment Successful! Here is your change: ", userPayment - int(row[1]))                            
+                    else:
+                        invalidPayment = False
+                        print("Payment Successful! ")  
+    return not invalidPayment 
+
+def Overwrite(file, data):
+    with open(file, 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(data)
 
 def Main_Menu():
     studentProfile = []
@@ -171,62 +198,69 @@ def Main_Menu():
                         case _:
                             invalidSemester = True
                             print("Invalid Input\n")
-                if studentProfile[6] == "1st Sem":
-                    match studentProfile[5]:
-                        case "BSCS":
-                            tuitionFee = Search_Subjects("BSCS", '1stSemesterSubjects.csv')
-                        case "BSEMC":
-                            tuitionFee = Search_Subjects("BSEMC", '1stSemesterSubjects.csv')
-                        case "BMMA":
-                            tuitionFee = Search_Subjects("BMMA", '1stSemesterSubjects.csv')
-                if studentProfile[6] == "2nd Sem":
-                    match studentProfile[5]:
-                        case "BSCS":
-                            tuitionFee = Search_Subjects("BSCS", '2ndSemesterSubjects.csv')
-                        case "BSEMC":
-                            tuitionFee = Search_Subjects("BSEMC", '2ndSemesterSubjects.csv')
-                        case "BMMA":
-                            tuitionFee = Search_Subjects("BMMA", '2ndSemesterSubjects.csv')
+                tuitionFee = Search_Subjects(studentProfile[5], studentProfile[6])
                 enrollmentReferenceNumber = [Reference_Number_Generator(), tuitionFee]
                 studentProfile.append("Not Enrolled")
                 studentProfile.append(enrollmentReferenceNumber[0])
                 print("Your enrollment reference number to be presented for the payment: " + enrollmentReferenceNumber[0])
 
                 Save_To_CSV('EnrollmentReferenceNumbers.csv', enrollmentReferenceNumber)
-                if Tamper_Check('EnrollmentReferenceNumbers.csv'):
-                    Save_To_CSV('EnrollmentReferenceNumbers.csv', enrollmentReferenceNumber)
-
-                with open('StudentProfile.csv', 'w', newline='') as file:
-                    writer = csv.writer(file)
-                    writer.writerow(studentProfile)
-
-                with open('StudentProfile.csv', 'r') as file:
-                    reader = csv.reader(file)
-                    for row in reader:
-                        print(row)
-
-                with open('EnrollmentReferenceNumbers.csv', 'r') as file:
-                    reader = csv.reader(file)
-                    for row in reader:
-                        print(row)
+                Recover('StudentProfile.csv')
+                Save_To_CSV('StudentProfile.csv', studentProfile)
                 Backup()
                 Main_Menu()
                 
             case 'p' | 'P':
                 invalidInput = False
-                userReference = (input("Input your reference number: "))
-                
+                invalidReference = True
                 with open('EnrollmentReferenceNumbers.csv', 'r') as file:
                     reader = csv.reader(file)
-                    for row in reader:                       
-                        if row[0] == userReference: 
-                            print("Your total amount balance to pay is:", row[1])
-                            userPayment = int((input("Input your payment: ")))                            
-                            if userPayment < int(row[1]):
-                                print("Payment error! Your payment ips insufficient!")     
-                            elif userPayment > int(row[1]):
-                                print("Payment Successful! Here is your change: ", userPayment - int(row[1]))                            
-                            else: print("Payment Successful! ")                
+                    match sum(1 for row in reader):
+                        case 0:
+                            print("Data unavailable please enroll first")
+                            Main_Menu()
+                        case _:
+                            while invalidReference:
+                                userReference = (input("Input your reference number: "))
+                                with open('EnrollmentReferenceNumbers.csv', 'r') as file:
+                                    reader = csv.reader(file)
+                                    for row in reader:                  
+                                        if row[0] == userReference: 
+                                            invalidReference = False
+                                with open('StudentProfile.csv', 'r') as file:
+                                    reader = csv.reader(file)
+                                    for row in reader:                  
+                                        if row[8] == userReference:
+                                            if row[1] != "0":
+                                                print ("Student Name: " + row[0] + " " + row[1] + " " + row[2])
+                                            else:
+                                                print ("Student Name: " + row[0] + " " + row[2])
+                                            Search_Subjects(row[5], row[6])
+                                            if Payment(userReference):
+                                                print("You are now succesfully enrolled!")
+                                                userId = ID_Number_Generator()
+                                                print("Your student ID: " + userId)
+                                                lines = list()
+                                                with open('StudentProfile.csv', 'r') as file:
+                                                    reader = csv.reader(file)
+                                                    for row in reader:
+                                                        lines.append(row)
+                                                        if row[8] == userReference:
+                                                            row[8] = userId
+                                                            row[7] = "Enrolled"
+                                                Overwrite('StudentProfile.csv', lines)
+                                                lines = list()
+                                                with open('EnrollmentReferenceNumbers.csv', 'r') as file:
+                                                    reader = csv.reader(file)
+                                                    for row in reader:
+                                                        lines.append(row)
+                                                        if row[0] == userReference:
+                                                            lines.remove(row)
+                                                Overwrite('EnrollmentReferenceNumbers.csv', lines)
+                                                Backup()
+                                        elif invalidReference:
+                                            invalidReference = True
+                                            print("Invalid reference number")            
             case _:
                 invalidInput = True
                 print("Invalid Input\n")
