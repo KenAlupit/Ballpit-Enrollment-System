@@ -110,6 +110,11 @@ def Overwrite(file, data):
         writer = csv.writer(file)
         writer.writerows(data)
 
+def Print_Invalid_Input():
+    print("+---------------+")
+    print("| Invalid Input |")
+    print("+---------------+\n")
+
 def Main_Menu():
     studentProfile = []
     correctDate = False
@@ -127,15 +132,18 @@ def Main_Menu():
 ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝     ╚═╝   ╚═╝                                                     
                 Enrollment System""")
     while invalidInput:
-        print("Enrollment - E")
-        print("Payment - P")
+        print("+----------------+")
+        print("| Enrollment | E |")
+        print("+----------------+")
+        print("|  Payment   | P |")
+        print("+----------------+")
         match input("Input: "):
             case 'e' | 'E':
                 invalidInput = False
                 studentProfile.append(input("First Name: "))
                 userMiddleName = input("Middle Name (0 if not applicable): ")
                 match userMiddleName:
-                    case 0:
+                    case "0":
                         studentProfile.append("N/A")
                     case _:
                         studentProfile.append(userMiddleName)
@@ -151,9 +159,13 @@ def Main_Menu():
                         correctDate = False
 
                 while invalidGender:
-                    print("Sex:")
-                    print("Male - M")
-                    print("Female - F")
+                    print("+----------------+")
+                    print("|      Sex       |")
+                    print("+----------------+")
+                    print("|    Male    | M |")
+                    print("+------------+---+")
+                    print("|   Female   | F |")
+                    print("+----------------+")
                     match input("Input: "):
                         case 'm' | 'M':
                             invalidGender = False
@@ -163,13 +175,18 @@ def Main_Menu():
                             studentProfile.append("Female")
                         case _:
                             invalidGender = True
-                            print("Invalid Input\n")
+                            Print_Invalid_Input()
                 
                 while invalidCourse:
-                    print("Course:")
-                    print("Bachelor of Science in Computer Science (BSCS) - A")
-                    print("Bachelor of Entertainment and Multimedia Computing (BSEMC) - B")
-                    print("Bachelor of Multimedia Arts (BMMA) - C")
+                    print("+----------------------------------------------------------------+")
+                    print("|                          Course:                               |")
+                    print("+----------------------------------------------------------------+")
+                    print("| Bachelor of Science in Computer Science (BSCS)             | A |")
+                    print("+------------------------------------------------------------+---+")
+                    print("| Bachelor of Entertainment and Multimedia Computing (BSEMC) | B |")
+                    print("+------------------------------------------------------------+---+")
+                    print("| Bachelor of Multimedia Arts (BMMA)                         | C |")
+                    print("+------------------------------------------------------------+---+")
                     match input("Input: "):
                         case 'a' | 'A':
                             invalidCourse = False
@@ -182,12 +199,16 @@ def Main_Menu():
                             studentProfile.append("BMMA")
                         case _:
                             invalidCourse = True
-                            print("Invalid Input\n")
+                            Print_Invalid_Input()
 
                 while invalidSemester:
-                    print("What semester are you enrolling in?")
-                    print("1st Semester - A")
-                    print("2nd Semester - B")
+                    print("+-------------------------------------+")
+                    print("| What semester are you enrolling in? |")
+                    print("+-------------------------------------+")
+                    print("|          1st Semester           | A |")
+                    print("+---------------------------------+---+")
+                    print("|          2nd Semester           | B |")
+                    print("+---------------------------------+---+")
                     match input("Input: "):
                         case 'a' | 'A':
                             invalidSemester = False
@@ -197,7 +218,7 @@ def Main_Menu():
                             studentProfile.append("2nd Sem")
                         case _:
                             invalidSemester = True
-                            print("Invalid Input\n")
+                            Print_Invalid_Input()
                 tuitionFee = Search_Subjects(studentProfile[5], studentProfile[6])
                 enrollmentReferenceNumber = [Reference_Number_Generator(), tuitionFee]
                 studentProfile.append("Not Enrolled")
@@ -231,7 +252,7 @@ def Main_Menu():
                                     reader = csv.reader(file)
                                     for row in reader:                  
                                         if row[8] == userReference:
-                                            if row[1] != "0":
+                                            if row[1] != "N/A":
                                                 print ("Student Name: " + row[0] + " " + row[1] + " " + row[2])
                                             else:
                                                 print ("Student Name: " + row[0] + " " + row[2])
@@ -263,7 +284,7 @@ def Main_Menu():
                                             print("Invalid reference number")            
             case _:
                 invalidInput = True
-                print("Invalid Input\n")
+                Print_Invalid_Input()
 
 File_Check_And_Recover('StudentProfile.csv')
 File_Check_And_Recover('1stSemesterSubjects.csv')
