@@ -18,7 +18,7 @@ def Reference_Number_Generator():
     return randomReference
 
 def ID_Number_Generator():
-    #Creates the random enrollment reference number
+    #Creates the random ID number 
     randomID = ''.join(random.choices(string.digits, k=2)) + "-" + ''.join(random.choices(string.digits, k=4))
     with open('StudentProfile.csv', 'r') as file:
         reader = csv.reader(file)
@@ -44,7 +44,7 @@ def Search_Subjects(course, semester):
             tuitionFee = Semester_Picker('1stSemesterSubjects.csv', course)
         case "2nd Sem":
             tuitionFee = Semester_Picker('2ndSemesterSubjects.csv', course)
-    print("Total tuiton fee: ", tuitionFee)
+    print("Total tuiton fee:", tuitionFee)
     return tuitionFee
 
 
@@ -96,7 +96,7 @@ def Payment(reference):
                     userPayment = int((input("Input your payment: ")))                            
                     if userPayment < int(row[1]):
                         invalidPayment = True
-                        print("Payment error! Your payment ips insufficient!")     
+                        print("Payment error! Your payment is insufficient!")     
                     elif userPayment > int(row[1]):
                         invalidPayment = False
                         print("Payment Successful! Here is your change: ", userPayment - int(row[1]))                            
@@ -238,7 +238,7 @@ def Main_Menu():
                     reader = csv.reader(file)
                     match sum(1 for row in reader):
                         case 0:
-                            print("Data unavailable please enroll first")
+                            print("Data unavailable! Please enroll first!")
                             Main_Menu()
                         case _:
                             while invalidReference:
