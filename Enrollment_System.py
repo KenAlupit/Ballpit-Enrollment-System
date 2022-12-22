@@ -1,4 +1,5 @@
 from prettytable import PrettyTable
+import subprocess
 import ctypes
 import os
 import csv
@@ -328,6 +329,7 @@ def Main_Menu():
                                                     lines = list()
                                                     with open('EnrollmentReferenceNumbers.csv', 'r') as enrollFile, open('StudentProfile.csv', 'r') as studentFile:
                                                         studentFilereader = csv.reader(studentFile)
+                                                        enrollFilereader = csv.reader(enrollFile)
                                                         for row in studentFilereader:
                                                             lines.append(row)
                                                             if row[8] == userReference:
@@ -335,7 +337,7 @@ def Main_Menu():
                                                                 row[7] = "Enrolled"
                                                         Overwrite_To_CSV('StudentProfile.csv', lines)
                                                         lines = list()
-                                                        for row in studentFilereader:
+                                                        for row in enrollFilereader:
                                                             lines.append(row)
                                                             if row[0] == userReference:
                                                                 lines.remove(row)
@@ -344,10 +346,10 @@ def Main_Menu():
                                                         enrollFile.close()
                                                         studentFile.close()
                                                         Back_To_Main_Menu()
-                                    elif invalidReference:
-                                        invalidReference = True
-                                        Print_String_With_Format("Invalid reference number") 
-                                        Back_To_Main_Menu()           
+                                            elif invalidReference:
+                                                invalidReference = True
+                                                Print_String_With_Format("Invalid reference number") 
+                                                Back_To_Main_Menu()           
             case 's' | 'S':
                 invalidID = True
                 studentInfo = PrettyTable()
@@ -368,6 +370,9 @@ def Main_Menu():
                                     invalidID = True
                                     Print_String_With_Format("Invalid ID Number")
                                     Back_To_Main_Menu()
+            case 'a' | 'A':
+                subprocess.call('Admin_Panel.py', shell=True)
+                Back_To_Main_Menu()
             case _:
                 invalidInput = True
                 Print_Invalid_Input()
