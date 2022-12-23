@@ -15,6 +15,28 @@ def Print_String_With_Format(string):
     print(format)
     return
 
+def Back_To_Main_Menu():
+    invalidInput = True
+    while invalidInput:
+        print("+--------------------+")
+        print("| Back to Main Menu? |")
+        print("+----------------+---+")
+        print("|       Yes      | Y |")
+        print("+----------------+---+")
+        print("|       No       | N |")
+        print("+----------------+---+")
+        match input("Input: "):
+            case 'y' | 'Y':
+                invalidInput = False
+                Main_Menu()
+            case 'n' | 'N':
+                invalidInput = False
+                backToMainMenu = False
+            case _:
+                invalidInput = True
+                Print_Invalid_Input()
+    return backToMainMenu
+
 def Search(searchKey, index):
     searchResult = PrettyTable()
     resultCount = list()
@@ -31,25 +53,9 @@ def Search(searchKey, index):
         print(searchResult)
     else: 
         Print_String_With_Format("No Results")
+        if not Back_To_Main_Menu():
+            Search_Menu()
     return 
-
-def Search_Again():
-    invalidInput = True
-    while invalidInput:
-        print("+---------------+")
-        print("| Search Again? |")
-        print("+-----------+---+")
-        print("|     Yes   | Y |")
-        print("+-----------+---+")
-        print("|     No    | N |")
-        print("+-----------+---+")
-        match input("Input: "):
-            case 'y' | 'Y':
-                Search_Menu()
-            case 'n' | 'N':
-                Main_Menu()
-            case _:
-                Print_Invalid_Input()
 
 def Print_Student_Header():
     print("+----------------------+---+----------------------+---+----------------------+---+")
@@ -59,6 +65,9 @@ def Print_Student_Header():
     print("+----------------------+---+----------------------+---+----------------------+---+")
     print("|       Semester       | G |   Enrollment Status  | H |          ID          | I |")
     print("+----------------------+---+----------------------+---+----------------------+---+")
+    print("                           |   Back to Main Menu  | J |                          |")
+    print("                           +----------------------+---+                           ")
+
 
 def Birthdate_Input():
     correctDate = False
@@ -165,6 +174,18 @@ def Enrollment_Status_Input():
                 Print_Invalid_Input()
     return enrollmentStatus
         
+def ID_Input():
+    invalidFormat = True
+    while invalidFormat:
+        idInput = input("Input Student ID or Enrollment Reference Number: ")
+        if re.match('^[0-9]{2}-[0-9]{4}$', idInput) or re.match('^[a-zA-Z]{8}$', idInput):
+            invalidFormat = False
+            id = idInput
+        else:
+            invalidFormat = True
+            Print_String_With_Format("Invalid Format")
+    return id
+
 def Search_Menu():
     invalidInput = True
     while invalidInput:
@@ -173,43 +194,37 @@ def Search_Menu():
             case 'a' | 'A':
                 invalidInput = False
                 Search(input("Please insert first name: "), 0)
-                Search_Again()
             case 'b' | 'B':
                 invalidInput = False
                 Search(input("Please insert middle name: "), 1)
-                Search_Again()
             case 'c' | 'C':
                 invalidInput = False
                 Search(input("Please insert last name: "), 2)
-                Search_Again()
             case 'd' | 'D':
                 invalidInput = False
                 Search(Birthdate_Input(), 3)
-                Search_Again()
             case 'e' | 'E':
                 invalidInput = False
                 Search(Sex_Input(), 4)
-                Search_Again()
             case 'f' | 'F':
                 invalidInput = False
                 Search(Course_Input(), 5)
-                Search_Again()
             case 'g' | 'G':
                 invalidInput = False
-                Search(Semester_Input(), 6)
-                Search_Again()
+                Search(Semester_Input(), 6)                
             case 'h' | 'H':
                 invalidInput = False
-                Search(Enrollment_Status_Input(), 7)
-                Search_Again()
+                Search(Enrollment_Status_Input(), 7)                
             case 'i' | 'I':
                 invalidInput = False
-                Search(input("Input Student ID or Enrollment Reference Number: "), 8)
-                Search_Again()
+                Search(ID_Input(), 8)    
+            case 'j' | 'J':            
+                Main_Menu()
             case _:
                 invalidInput = True
-                Print_Invalid_Input()
-                Search_Again()
+                Print_Invalid_Input()                
+    if not Back_To_Main_Menu():
+        Search_Menu()
 
 def Overwrite_To_CSV(file, data):
     # Saves data by overwriting the CSV file
@@ -245,14 +260,17 @@ def Clear_Menu():
     print("+----------------------------------------+---+")
     match input("Input: "):
         case 'a' | 'A':
-            Clear('EnrollmentReferenceNumbers.csv')
+            if Login():
+                Clear('EnrollmentReferenceNumbers.csv')
             Main_Menu()
         case 'b' | 'B':
-            Clear('StudentProfile.csv')
+            if Login():
+                Clear('StudentProfile.csv')
             Main_Menu()
         case 'c' | 'C':
-            Clear('.Backup/EnrollmentReferenceNumbers.csv')
-            Clear('.Backup/StudentProfile.csv')
+            if Login():
+                Clear('.Backup/EnrollmentReferenceNumbers.csv')
+                Clear('.Backup/StudentProfile.csv')
             Main_Menu()
         case _:
             Print_Invalid_Input()
@@ -271,19 +289,78 @@ def Login():
     adminUsername = "admin"
     adminPassword = "1234"
 
-    Print_Ballpit_ASCII()
     usernameInput = input("Input Username: ")
     passwordInput = getpass("Input Password: ")
     if adminUsername == usernameInput and adminPassword == passwordInput:
-        Main_Menu()
+        successfulLogin = True
     else:
+        successfulLogin = False
         Print_String_With_Format("incorrect password")
-    return 
+    return successfulLogin
 
 def Change_Student_Data(row, data, index, list):
     list.append(row)
     row[index] = data
     Overwrite_To_CSV('StudentProfile.csv', list)
+
+def Modify_Menu():
+    temp = list()
+    inputID = ID_Input()
+    invalidInput = True
+    with open('StudentProfile.csv', 'r') as studentFile:
+        studentFileReader = csv.reader(studentFile)
+        for row in studentFileReader:
+            if studentFileReader.line_num == 1:
+                temp.append(row)
+            if row[8] == inputID:
+                invalidID = False
+                Search(inputID, 8)
+                while invalidInput:
+                    Print_String_With_Format("Select data to change:")
+                    Print_Student_Header()
+                    match input("Input: "):
+                        case 'a' | 'A':
+                            invalidInput = False
+                            newData = input("Input new first name: ")
+                            Change_Student_Data(row, newData, 0, temp)
+                        case 'b' | 'B':
+                            invalidInput = False
+                            newData = input("Input new middle name: ")
+                            Change_Student_Data(row, newData, 1, temp)
+                        case 'c' | 'C':
+                            invalidInput = False
+                            newData = input("Input new last name: ")
+                            Change_Student_Data(row, newData, 2, temp)
+                        case 'd' | 'D':
+                            invalidInput = False
+                            Change_Student_Data(row, Birthdate_Input(), 3, temp)
+                        case 'e' | 'E':
+                            invalidInput = False
+                            Change_Student_Data(row, Sex_Input(), 4, temp)
+                        case 'f' | 'F':
+                            invalidInput = False
+                            Change_Student_Data(row, Course_Input(), 5, temp)
+                        case 'g' | 'G':
+                            invalidInput = False
+                            Change_Student_Data(row, Semester_Input(), 6, temp)
+                        case 'h' | 'H':
+                            invalidInput = False
+                            Change_Student_Data(row, Enrollment_Status_Input(), 7, temp)
+                        case 'i' | 'I':
+                            invalidInput = False
+                            Change_Student_Data(row, ID_Input(), 8, temp)
+                        case 'j' | 'J':            
+                            Main_Menu()
+                        case _:
+                            invalidInput = True
+                            Print_Invalid_Input() 
+                break 
+            else:
+                invalidID = True 
+        if invalidID:
+            Print_String_With_Format("ID not found")
+        if not Back_To_Main_Menu():
+            Modify_Menu()  
 
 def Main_Menu():
     invalidInput = True
@@ -304,42 +381,7 @@ def Main_Menu():
                 Search_Menu()
             case 'm' | 'M':
                 invalidInput = False
-                temp = list()
-                inputID = input("Input Student ID or Enrollment Reference Number: ")
-                with open('StudentProfile.csv', 'r') as studentFile:
-                    studentFileReader = csv.reader(studentFile)
-                    for row in studentFileReader:
-                        if studentFileReader.line_num == 1:
-                            temp.append(row)
-                        if row[8] == inputID:
-                            Search(inputID, 8)
-                            Print_String_With_Format("Select data to change:")
-                            Print_Student_Header()
-                            match input("Input: "):
-                                case 'a' | 'A':
-                                    newData = input("Input new first name: ")
-                                    Change_Student_Data(row, newData, 0, temp)
-                                case 'b' | 'B':
-                                    newData = input("Input new middle name: ")
-                                    Change_Student_Data(row, newData, 1, temp)
-                                case 'c' | 'C':
-                                    newData = input("Input new last name: ")
-                                    Change_Student_Data(row, newData, 2, temp)
-                                case 'd' | 'D':
-                                    Change_Student_Data(row, Birthdate_Input(), 3, temp)
-                                case 'e' | 'E':
-                                    Change_Student_Data(row, Sex_Input(), 4, temp)
-                                case 'f' | 'F':
-                                    Change_Student_Data(row, Course_Input(), 5, temp)
-                                case 'g' | 'G':
-                                    Change_Student_Data(row, Semester_Input(), 6, temp)
-                                case 'h' | 'H':
-                                    Change_Student_Data(row, Enrollment_Status_Input(), 7, temp)
-                                case 'i' | 'I':
-                                    pass
-                                case _:
-                                    invalidInput = True
-                                    Print_Invalid_Input()              
+                Modify_Menu()
             case 'c' | 'C':
                 invalidInput = False
                 Clear_Menu()
@@ -350,4 +392,6 @@ def Main_Menu():
                 Main_Menu()
                 Print_Invalid_Input()
 
-Login()
+Print_Ballpit_ASCII()
+if Login():
+    Main_Menu()

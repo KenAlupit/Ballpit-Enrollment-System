@@ -62,6 +62,7 @@ def Backup():
     shutil.copy('2ndSemesterSubjects.csv', '.Backup')
     shutil.copy('EnrollmentReferenceNumbers.csv', '.Backup')
     shutil.copy('StudentProfile.csv', '.Backup')
+    shutil.copy('Admin_Panel.py', '.Backup')
     return
 
 def Recover(file):
@@ -75,11 +76,14 @@ def Recover(file):
             shutil.copy('.Backup/EnrollmentReferenceNumbers.csv', os.getcwd())
         case 'StudentProfile.csv':
             shutil.copy('.Backup/StudentProfile.csv', os.getcwd())
+        case 'Admin_Panel.py':
+            shutil.copy('.Backup/Admin_Panel.py', os.getcwd())
         case _:
             shutil.copy('.Backup/1stSemesterSubjects.csv', os.getcwd())
             shutil.copy('.Backup/2ndSemesterSubjects.csv', os.getcwd())
             shutil.copy('.Backup/EnrollmentReferenceNumbers.csv', os.getcwd())
             shutil.copy('.Backup/StudentProfile.csv', os.getcwd())
+            shutil.copy('.Backup/Admin_Panel.py', os.getcwd())
     return
 
 def File_Check_And_Recover(file):
@@ -371,8 +375,17 @@ def Main_Menu():
                                     Print_String_With_Format("Invalid ID Number")
                                     Back_To_Main_Menu()
             case 'a' | 'A':
-                subprocess.call('Admin_Panel.py', shell=True)
-                Back_To_Main_Menu()
+                adminPanel = 'Admin_Panel.py'
+                if not os.path.isfile(adminPanel): 
+                    if os.path.isfile('.Backup/' + file):
+                        Recover(adminPanel)   
+                        subprocess.call(adminPanel, shell=True)
+                    else:
+                        Print_String_With_Format("Admin panel not found")
+                        Main_Menu()
+                else:
+                    subprocess.call(adminPanel, shell=True)
+                Main_Menu()
             case _:
                 invalidInput = True
                 Print_Invalid_Input()
