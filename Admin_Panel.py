@@ -262,16 +262,22 @@ def Clear_Menu():
         case 'a' | 'A':
             if Login():
                 Clear('EnrollmentReferenceNumbers.csv')
-            Main_Menu()
+            Print_String_With_Format("Succesfully Cleared")
+            if not Back_To_Main_Menu():
+                Clear_Menu()
         case 'b' | 'B':
             if Login():
                 Clear('StudentProfile.csv')
-            Main_Menu()
+            Print_String_With_Format("Succesfully Cleared")
+            if not Back_To_Main_Menu():
+                Clear_Menu()
         case 'c' | 'C':
             if Login():
                 Clear('.Backup/EnrollmentReferenceNumbers.csv')
                 Clear('.Backup/StudentProfile.csv')
-            Main_Menu()
+            Print_String_With_Format("Succesfully Cleared")
+            if not Back_To_Main_Menu():
+                Clear_Menu()
         case _:
             Print_Invalid_Input()
 

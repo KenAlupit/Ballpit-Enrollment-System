@@ -370,10 +370,10 @@ def Main_Menu():
                                     studentInfo.add_row(row) 
                                     print(studentInfo)
                                     Back_To_Main_Menu()
-                                elif invalidID:
-                                    invalidID = True
-                                    Print_String_With_Format("Invalid ID Number")
-                                    Back_To_Main_Menu()
+                    if invalidID:
+                        invalidID = True
+                        Print_String_With_Format("Invalid ID Number")
+                        Back_To_Main_Menu()
             case 'a' | 'A':
                 adminPanel = 'Admin_Panel.py'
                 if not os.path.isfile(adminPanel): 
