@@ -2,6 +2,71 @@ from getpass import getpass
 from prettytable import PrettyTable
 import re
 import csv
+import ctypes
+import shutil
+import os
+
+firststSemesterCSV = '1stSemesterSubjects.csv'
+secondSemesterCSV = '2ndSemesterSubjects.csv'
+enrollmentReferenceCSV = 'EnrollmentReferenceNumbers.csv'
+studentProfileCSV = 'StudentProfile.csv'
+adminPanelScript = 'Admin_Panel.py'
+
+def Backup(file = None):
+    # Backs up every CSV file to a hidden backup folder
+    match file:
+        case '1stSemesterSubjects.csv':
+            shutil.copy(firststSemesterCSV, '.Backup')
+        case '2ndSemesterSubjects.csv':
+            shutil.copy(secondSemesterCSV, '.Backup')
+        case 'EnrollmentReferenceNumbers.csv':
+            shutil.copy(enrollmentReferenceCSV, '.Backup')
+        case 'StudentProfile.csv':
+            shutil.copy(studentProfileCSV, '.Backup')
+        case 'Admin_Panel.py':
+            shutil.copy(adminPanelScript, '.Backup')
+        case _:
+            shutil.copy(firststSemesterCSV, '.Backup')
+            shutil.copy(secondSemesterCSV, '.Backup')
+            shutil.copy(enrollmentReferenceCSV, '.Backup')
+            shutil.copy(studentProfileCSV, '.Backup')
+            shutil.copy(adminPanelScript, '.Backup')
+    return
+
+def Recover(file = None):
+    # Recovers CSV files from the hidden backup folder
+    match file:
+        case 'EnrollmentReferenceNumbers.csv':
+            shutil.copy('.Backup/' + enrollmentReferenceCSV, os.getcwd())
+        case 'StudentProfile.csv':
+            shutil.copy('.Backup/' + studentProfileCSV, os.getcwd())
+        case _:
+            shutil.copy('.Backup/' + enrollmentReferenceCSV, os.getcwd())
+            shutil.copy('.Backup/' + studentProfileCSV, os.getcwd())
+    return
+
+def File_Check_And_Recover(file):
+    # Checks whether a file exist in the main directory if not it will check 
+    # the hidden backup folder for the file if available it will restore 
+    # the file to the main directory
+    studentProfileHeader = ["First Name", "Middle Name", "Last Name", "Birthdate", "Sex", "Course", "Semester", "Enrollment status", "ID"]
+    if not os.path.isfile(file):
+        if not os.path.isfile('.Backup/' + file):
+            open(file, 'a')
+            if file == studentProfileCSV:
+                Save_To_CSV(file, studentProfileHeader)
+            Backup(file)
+        else:
+             Recover(file)
+    return
+
+def Save_To_CSV(CSVfile, data):
+    # Saves data to a CSV file by appending
+    with open(CSVfile, 'a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(data)
+    file.close()
+    return
 
 def Print_Invalid_Input():
     Print_String_With_Format("Invalid Input")
@@ -40,7 +105,7 @@ def Back_To_Main_Menu():
 def Search(searchKey, index):
     searchResult = PrettyTable()
     resultCount = list()
-    with open('StudentProfile.csv', 'r') as studentFile:
+    with open(studentProfileCSV, 'r') as studentFile:
         studentFileReader = csv.reader(studentFile)
         for row in studentFileReader:
             if studentFileReader.line_num == 1:
@@ -247,6 +312,7 @@ def Clear(inputFile):
                     if fileReader.line_num != 1:
                         temp.remove(row)
     Overwrite_To_CSV(inputFile, temp)
+    Print_String_With_Format("Succesfully Cleared")
     readFile.close()
 
                
@@ -261,21 +327,18 @@ def Clear_Menu():
     match input("Input: "):
         case 'a' | 'A':
             if Login():
-                Clear('EnrollmentReferenceNumbers.csv')
-            Print_String_With_Format("Succesfully Cleared")
+                Clear(enrollmentReferenceCSV)
             if not Back_To_Main_Menu():
                 Clear_Menu()
         case 'b' | 'B':
             if Login():
-                Clear('StudentProfile.csv')
-            Print_String_With_Format("Succesfully Cleared")
+                Clear(studentProfileCSV)
             if not Back_To_Main_Menu():
                 Clear_Menu()
         case 'c' | 'C':
             if Login():
                 Clear('.Backup/EnrollmentReferenceNumbers.csv')
                 Clear('.Backup/StudentProfile.csv')
-            Print_String_With_Format("Succesfully Cleared")
             if not Back_To_Main_Menu():
                 Clear_Menu()
         case _:
@@ -292,28 +355,31 @@ def Print_Ballpit_ASCII():
                     Admin Panel""")
 
 def Login():
+    successfulLogin = False
     adminUsername = "admin"
     adminPassword = "1234"
-
-    usernameInput = input("Input Username: ")
-    passwordInput = getpass("Input Password: ")
-    if adminUsername == usernameInput and adminPassword == passwordInput:
-        successfulLogin = True
-    else:
-        successfulLogin = False
-        Print_String_With_Format("incorrect password")
+    
+    while not successfulLogin:
+        usernameInput = input("Input Username: ")
+        passwordInput = getpass("Input Password: ")
+        if adminUsername == usernameInput and adminPassword == passwordInput:
+            successfulLogin = True
+        else:
+            successfulLogin = False
+            Print_String_With_Format("incorrect password")
     return successfulLogin
 
 def Change_Student_Data(row, data, index, list):
     list.append(row)
     row[index] = data
-    Overwrite_To_CSV('StudentProfile.csv', list)
+    Overwrite_To_CSV(studentProfileCSV, list)
+    Print_String_With_Format("Sucessfully Modified")
 
 def Modify_Menu():
     temp = list()
     inputID = ID_Input()
     invalidInput = True
-    with open('StudentProfile.csv', 'r') as studentFile:
+    with open(studentProfileCSV, 'r') as studentFile:
         studentFileReader = csv.reader(studentFile)
         for row in studentFileReader:
             if studentFileReader.line_num == 1:
@@ -367,6 +433,22 @@ def Modify_Menu():
             Print_String_With_Format("ID not found")
         if not Back_To_Main_Menu():
             Modify_Menu()  
+    studentFile.close()
+
+def Delete_Student():
+    temp = list()
+    inputID = ID_Input()
+    with open(studentProfileCSV, 'r') as studentFile:
+        studentFileReader = csv.reader(studentFile)
+        for row in studentFileReader:
+            temp.append(row)
+            if row[8] == inputID:
+                temp.remove(row)
+    Overwrite_To_CSV(studentProfileCSV, temp)
+    Print_String_With_Format("Deleted")
+    if not Back_To_Main_Menu():
+        Delete_Student()
+    studentFile.close()
 
 def Main_Menu():
     invalidInput = True
@@ -378,6 +460,8 @@ def Main_Menu():
         print("|   Modify   | M |")
         print("+------------+---+")
         print("|    Clear   | C |")
+        print("+------------+---+")
+        print("|   Delete   | D |")
         print("+------------+---+")
         print("|    Quit    | Q |")
         print("+------------+---+")
@@ -391,13 +475,25 @@ def Main_Menu():
             case 'c' | 'C':
                 invalidInput = False
                 Clear_Menu()
+            case 'd' | 'D':
+                invalidInput = False
+                Delete_Student()
             case 'q' | 'Q':
                 quit()
             case _:
                 invalidInput = True
-                Main_Menu()
                 Print_Invalid_Input()
 
-Print_Ballpit_ASCII()
-if Login():
-    Main_Menu()
+if __name__ == "__main__":
+    File_Check_And_Recover(enrollmentReferenceCSV)
+    File_Check_And_Recover(studentProfileCSV)
+
+    if not os.path.isdir('.Backup'):
+        os.mkdir('.Backup')
+        FILE_ATTRIBUTE_HIDDEN = 0x02
+        ret = ctypes.windll.kernel32.SetFileAttributesW('.Backup', FILE_ATTRIBUTE_HIDDEN)
+        Backup()
+
+    Print_Ballpit_ASCII()
+    if Login():
+        Main_Menu()
