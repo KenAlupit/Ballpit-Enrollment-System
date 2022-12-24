@@ -68,6 +68,14 @@ def Save_To_CSV(CSVfile, data):
     file.close()
     return
 
+def Overwrite_To_CSV(file, data):
+    # Saves data by overwriting the CSV file
+    with open(file, 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(data)
+    file.close()
+    return
+
 def Print_Invalid_Input():
     Print_String_With_Format("Invalid Input")
     return
@@ -80,29 +88,8 @@ def Print_String_With_Format(string):
     print(format)
     return
 
-def Back_To_Main_Menu():
-    invalidInput = True
-    while invalidInput:
-        print("+--------------------+")
-        print("| Back to Main Menu? |")
-        print("+----------------+---+")
-        print("|       Yes      | Y |")
-        print("+----------------+---+")
-        print("|       No       | N |")
-        print("+----------------+---+")
-        match input("Input: "):
-            case 'y' | 'Y':
-                invalidInput = False
-                Main_Menu()
-            case 'n' | 'N':
-                invalidInput = False
-                backToMainMenu = False
-            case _:
-                invalidInput = True
-                Print_Invalid_Input()
-    return backToMainMenu
-
 def Search(searchKey, index):
+    # Searches specific details in StudentProfile.CSV 
     searchResult = PrettyTable()
     resultCount = list()
     with open(studentProfileCSV, 'r') as studentFile:
@@ -132,7 +119,29 @@ def Print_Student_Header():
     print("+----------------------+---+----------------------+---+----------------------+---+")
     print("                           |   Back to Main Menu  | J |                          |")
     print("                           +----------------------+---+                           ")
+    return
 
+def Back_To_Main_Menu():
+    invalidInput = True
+    while invalidInput:
+        print("+--------------------+")
+        print("| Back to Main Menu? |")
+        print("+----------------+---+")
+        print("|       Yes      | Y |")
+        print("+----------------+---+")
+        print("|       No       | N |")
+        print("+----------------+---+")
+        match input("Input: "):
+            case 'y' | 'Y':
+                invalidInput = False
+                Main_Menu()
+            case 'n' | 'N':
+                invalidInput = False
+                backToMainMenu = False
+            case _:
+                invalidInput = True
+                Print_Invalid_Input()
+    return backToMainMenu
 
 def Birthdate_Input():
     correctDate = False
@@ -243,6 +252,7 @@ def ID_Input():
     invalidFormat = True
     while invalidFormat:
         idInput = input("Input Student ID or Enrollment Reference Number: ")
+        # Checks whether the input format is correct
         if re.match('^[0-9]{2}-[0-9]{4}$', idInput) or re.match('^[a-zA-Z]{8}$', idInput):
             invalidFormat = False
             id = idInput
@@ -290,16 +300,11 @@ def Search_Menu():
                 Print_Invalid_Input()                
     if not Back_To_Main_Menu():
         Search_Menu()
-
-def Overwrite_To_CSV(file, data):
-    # Saves data by overwriting the CSV file
-    with open(file, 'w', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerows(data)
-    file.close()
     return
 
 def Clear(inputFile):
+    # Clears the details of a whole file if the said file is StudentProfile.CSV
+    # it will retain the header details
     temp = list()
     with open(inputFile, 'r') as readFile:
         fileReader = csv.reader(readFile)
@@ -314,6 +319,7 @@ def Clear(inputFile):
     Overwrite_To_CSV(inputFile, temp)
     Print_String_With_Format("Succesfully Cleared")
     readFile.close()
+    return
 
                
 def Clear_Menu():
@@ -343,6 +349,7 @@ def Clear_Menu():
                 Clear_Menu()
         case _:
             Print_Invalid_Input()
+    return
 
 def Print_Ballpit_ASCII():
     print(r""" 
@@ -370,10 +377,13 @@ def Login():
     return successfulLogin
 
 def Change_Student_Data(row, data, index, list):
+    # Modifies a detail from the given student profile
     list.append(row)
     row[index] = data
     Overwrite_To_CSV(studentProfileCSV, list)
+    Backup(studentProfileCSV)
     Print_String_With_Format("Sucessfully Modified")
+    return
 
 def Modify_Menu():
     temp = list()
@@ -434,6 +444,7 @@ def Modify_Menu():
         if not Back_To_Main_Menu():
             Modify_Menu()  
     studentFile.close()
+    return
 
 def Delete_Student():
     temp = list()
@@ -445,10 +456,12 @@ def Delete_Student():
             if row[8] == inputID:
                 temp.remove(row)
     Overwrite_To_CSV(studentProfileCSV, temp)
+    Backup(studentProfileCSV)
     Print_String_With_Format("Deleted")
     if not Back_To_Main_Menu():
         Delete_Student()
     studentFile.close()
+    return
 
 def Main_Menu():
     invalidInput = True
@@ -483,6 +496,7 @@ def Main_Menu():
             case _:
                 invalidInput = True
                 Print_Invalid_Input()
+    return
 
 if __name__ == "__main__":
     File_Check_And_Recover(enrollmentReferenceCSV)

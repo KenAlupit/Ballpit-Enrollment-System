@@ -413,7 +413,7 @@ def Main_Menu():
                 studentInfo = PrettyTable()
                 while invalidID:
                     userID = (input("Input your ID number (xx-xxxx): "))
-                    if re.match('^[0-9]{2}-[0-9]{4}$', userID):
+                    if re.match('^[0-9]{2}-[0-9]{4}$', userID): # Checks whether the input format is correct
                         with open(studentProfileCSV, 'r') as file:
                             reader = csv.reader(file)
                             for row in reader: 
@@ -432,7 +432,7 @@ def Main_Menu():
                             invalidID = True
             case 'a' | 'A':
                 if not os.path.isfile(adminPanelScript): 
-                    if os.path.isfile('.Backup/' + file):
+                    if os.path.isfile('.Backup/' + adminPanelScript):
                         Recover(adminPanelScript)   
                         subprocess.call(adminPanelScript, shell=True)
                     else:
