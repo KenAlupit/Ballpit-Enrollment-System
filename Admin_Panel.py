@@ -12,7 +12,7 @@ enrollmentReferenceCSV = 'EnrollmentReferenceNumbers.csv'
 studentProfileCSV = 'StudentProfile.csv'
 adminPanelScript = 'Admin_Panel.py'
 
-def Backup(file = None):
+def Backup(file=None):
     # Backs up every CSV file to a hidden backup folder
     match file:
         case '1stSemesterSubjects.csv':
@@ -33,7 +33,7 @@ def Backup(file = None):
             shutil.copy(adminPanelScript, '.Backup')
     return
 
-def Recover(file = None):
+def Recover(file=None):
     # Recovers CSV files from the hidden backup folder
     match file:
         case 'EnrollmentReferenceNumbers.csv':
@@ -65,7 +65,6 @@ def Save_To_CSV(CSVfile, data):
     with open(CSVfile, 'a', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(data)
-    file.close()
     return
 
 def Overwrite_To_CSV(file, data):
@@ -73,7 +72,6 @@ def Overwrite_To_CSV(file, data):
     with open(file, 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(data)
-    file.close()
     return
 
 def Print_Invalid_Input():
@@ -318,10 +316,8 @@ def Clear(inputFile):
                         temp.remove(row)
     Overwrite_To_CSV(inputFile, temp)
     Print_String_With_Format("Succesfully Cleared")
-    readFile.close()
     return
 
-               
 def Clear_Menu():
     print("+----------------------------------------+---+")
     print("|   Clear Enrollment Reference Numbers   | A |")
@@ -443,7 +439,6 @@ def Modify_Menu():
             Print_String_With_Format("ID not found")
         if not Back_To_Main_Menu():
             Modify_Menu()  
-    studentFile.close()
     return
 
 def Delete_Student():
@@ -460,7 +455,6 @@ def Delete_Student():
     Print_String_With_Format("Deleted")
     if not Back_To_Main_Menu():
         Delete_Student()
-    studentFile.close()
     return
 
 def Main_Menu():
