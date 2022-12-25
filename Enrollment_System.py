@@ -139,7 +139,6 @@ def Payment(reference):
                     userPayment = input("Input your payment: ") 
                     if userPayment.isdigit():
                         invalidPayment = False
-                        print("hello")
                         userPayment = int(userPayment)
                         if userPayment < int(row[1]):
                             invalidPayment = True
@@ -363,51 +362,48 @@ def Main_Menu():
                         while invalidReference:
                             userReference = (input("Input your reference number: "))
                             with open(enrollmentReferenceCSV, 'r') as enrollFile, open(studentProfileCSV, 'r') as studentFile:
-                                enrollReader = csv.reader(enrollFile)
-                                studentReader = csv.reader(studentFile)
-                                for row in enrollReader:                  
+                                enrollFileReader = csv.reader(enrollFile)
+                                studentFileReader = csv.reader(studentFile)
+                                for row in enrollFileReader:                  
                                     if row[0] == userReference: 
                                         invalidReference = False
-                                        for row in studentReader:                  
-                                            if row[8] == userReference:
-                                                if row[1] != "N/A":
-                                                    Print_String_With_Format ("Student Name: " + row[0] + " " + row[1] + " " + row[2])
-                                                else:
-                                                    Print_String_With_Format ("Student Name: " + row[0] + " " + row[2])
-                                                tuitionFee = Semester_Picker(row[5], row[6])
-                                                Print_String_With_Format("Total tuiton fee: " + str(tuitionFee))
-                                                enrollFile.close()
-                                                studentFile.close()
-
-                                                if Payment(userReference):
-                                                    Print_String_With_Format("You are now succesfully enrolled!")
-                                                    userId = ID_Number_Generator()
-                                                    Print_String_With_Format("Your student ID: " + userId)
-                                                    lines = list()
-                                                    with open(enrollmentReferenceCSV, 'r') as enrollFile, open(studentProfileCSV, 'r') as studentFile:
-                                                        studentFilereader = csv.reader(studentFile)
-                                                        enrollFilereader = csv.reader(enrollFile)
-                                                        for row in studentFilereader:
-                                                            lines.append(row)
-                                                            if row[8] == userReference:
-                                                                row[8] = userId
-                                                                row[7] = "Enrolled"
-                                                        Overwrite_To_CSV(studentProfileCSV, lines)
-                                                        lines = list()
-                                                        for row in enrollFilereader:
-                                                            lines.append(row)
-                                                            if row[0] == userReference:
-                                                                lines.remove(row)
-                                                        Overwrite_To_CSV(enrollmentReferenceCSV, lines)
-                                                        Backup()
-                                                        enrollFile.close()
-                                                        studentFile.close()
-                                                        if not Back_To_Main_Menu(2):
-                                                            invalidReference = True
-                            if invalidReference:
-                                Print_String_With_Format("Invalid reference number") 
+                                    if invalidReference:
+                                        Print_String_With_Format("Invalid reference number") 
+                                        if not Back_To_Main_Menu(2):
+                                            invalidReference = True     
+                                for row in studentFileReader:                  
+                                    if row[8] == userReference:
+                                        if row[1] != "N/A":
+                                            Print_String_With_Format ("Student Name: " + row[0] + " " + row[1] + " " + row[2])
+                                        else:
+                                            Print_String_With_Format ("Student Name: " + row[0] + " " + row[2])
+                                        tuitionFee = Semester_Picker(row[5], row[6])
+                                        Print_String_With_Format("Total tuiton fee: " + str(tuitionFee))
+                        if Payment(userReference):
+                            Print_String_With_Format("You are now succesfully enrolled!")
+                            userId = ID_Number_Generator()
+                            Print_String_With_Format("Your student ID: " + userId)
+                            with open(enrollmentReferenceCSV, 'r') as enrollFile, open(studentProfileCSV, 'r') as studentFile:
+                                enrollFileReader = csv.reader(enrollFile)
+                                studentFileReader = csv.reader(studentFile)
+                                lines = list()
+                                for row in studentFileReader:
+                                    lines.append(row)
+                                    if row[8] == userReference:
+                                        row[8] = userId
+                                        row[7] = "Enrolled"
+                                Overwrite_To_CSV(studentProfileCSV, lines)
+                                lines = list()
+                                for row in enrollFileReader:
+                                    lines.append(row)
+                                    if row[0] == userReference:
+                                        lines.remove(row)
+                                Overwrite_To_CSV(enrollmentReferenceCSV, lines)
+                                Backup()
+                                enrollFile.close()
+                                studentFile.close()
                                 if not Back_To_Main_Menu(2):
-                                    invalidReference = True           
+                                    invalidReference = True
             case 's' | 'S':
                 invalidID = True
                 studentInfo = PrettyTable()
