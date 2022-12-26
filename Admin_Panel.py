@@ -96,7 +96,7 @@ def Search(searchKey, index):
             if studentFileReader.line_num == 1:
                 searchResult.field_names = row
             elif studentFileReader.line_num != 1:
-                if re.search(searchKey, row[index], re.IGNORECASE):
+                if re.match(searchKey, row[index], re.IGNORECASE):
                     searchResult.add_row(row)     
                     resultCount.append(row)  
     if len(resultCount) != 0: 
@@ -150,7 +150,8 @@ def Birthdate_Input():
             correctDate = True
         else:
             Print_String_With_Format("Incorrect formatting please try again")
-            correctDate = False
+            if not Back_To_Main_Menu():
+                correctDate = False
     return userBirthdate
         
 def Sex_Input():
@@ -225,7 +226,7 @@ def Semester_Input():
     return semester
 
 def Enrollment_Status_Input():
-    invalidStatus = False
+    invalidStatus = True
     while invalidStatus:
         print("+-------------------------------------+")
         print("|         Enrollment Status:          |")
@@ -254,9 +255,10 @@ def ID_Input():
         if re.match('^[0-9]{2}-[0-9]{4}$', idInput) or re.match('^[a-zA-Z]{8}$', idInput):
             invalidFormat = False
             id = idInput
-        else:
-            invalidFormat = True
+        else:    
             Print_String_With_Format("Invalid Format")
+            if not Back_To_Main_Menu():
+                invalidFormat = True
     return id
 
 def Search_Menu():
@@ -330,21 +332,17 @@ def Clear_Menu():
         case 'a' | 'A':
             if Login():
                 Clear(enrollmentReferenceCSV)
-            if not Back_To_Main_Menu():
-                Clear_Menu()
         case 'b' | 'B':
             if Login():
                 Clear(studentProfileCSV)
-            if not Back_To_Main_Menu():
-                Clear_Menu()
         case 'c' | 'C':
             if Login():
                 Clear('.Backup/EnrollmentReferenceNumbers.csv')
                 Clear('.Backup/StudentProfile.csv')
-            if not Back_To_Main_Menu():
-                Clear_Menu()
         case _:
             Print_Invalid_Input()
+    if not Back_To_Main_Menu():
+        Clear_Menu()
     return
 
 def Print_Ballpit_ASCII():
