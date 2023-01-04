@@ -426,7 +426,7 @@ def Main_Menu():
                         Print_String_With_Format("Admin panel not found")
                         Main_Menu()
                 else:
-                    subprocess.call(adminPanelScript, shell=True)
+                    subprocess.call(adminPanelScript)
                 Main_Menu()
             case _:
                 invalidInput = True
