@@ -4,6 +4,7 @@ import ctypes
 import os
 import csv
 import re
+import sys
 import shutil
 import random
 import string
@@ -421,12 +422,12 @@ def Main_Menu():
                 if not os.path.isfile(adminPanelScript): 
                     if os.path.isfile('.Backup/' + adminPanelScript):
                         Recover(adminPanelScript)   
-                        subprocess.call(adminPanelScript)
+                        subprocess.call([sys.executable, adminPanelScript])
                     else:
                         Print_String_With_Format("Admin panel not found")
                         Main_Menu()
                 else:
-                    subprocess.call(adminPanelScript)
+                    subprocess.call([sys.executable, adminPanelScript])
                 Main_Menu()
             case _:
                 invalidInput = True
