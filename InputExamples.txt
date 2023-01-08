@@ -1,0 +1,36 @@
+Student 1:
+First Name: Ken Adrian
+Middle Name: Amoma
+Last Name: Alupit
+Birthdate: 08/22/2003
+Gender: Male
+Course: Bachelor of Science in Computer Science (BSCS)
+Semester: 1st Semester
+
+Student 2:
+First Name: Gilbert
+Middle Name: Nicdao
+Last Name: Alupit
+Birthdate: 08/11/1977
+Gender: Male
+Course: Bachelor of Entertainment and Multimedia Computing (BSEMC)
+Semester: 2nd Semester
+
+Student 3:
+First Name: Patrick Miguel
+Middle Name: Mercado
+Last Name: Babala
+Birthdate: 03/19/2004
+Gender: Male
+Course: Bachelor of Science in Computer Science (BSCS)
+Semester: 1st Semester
+
+
+Student 4:
+First Name: Dina Lauren
+Middle Name: Agoncillo
+Last Name: Babala
+Birthdate: 5/28/2004
+Gender: Female
+Course: Bachelor of Multimedia Arts (BMMA)
+Semester: 2nd Semester
