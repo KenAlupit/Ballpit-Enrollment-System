@@ -397,15 +397,18 @@ def Modify_Menu():
                     match input("Input: "):
                         case 'a' | 'A':
                             invalidInput = False
-                            newData = input("Input new first name: ")
+                            newData = input("Input new first name: ").capitalize()
                             Change_Student_Data(row, newData, 0, temp)
                         case 'b' | 'B':
                             invalidInput = False
-                            newData = input("Input new middle name: ")
-                            Change_Student_Data(row, newData, 1, temp)
+                            newData = input("Input new middle name (0 if not applicable): ").capitalize()
+                            if newData != "0":
+                                Change_Student_Data(row, newData, 1, temp)
+                            else:
+                                Change_Student_Data(row, "N/A", 1, temp)
                         case 'c' | 'C':
                             invalidInput = False
-                            newData = input("Input new last name: ")
+                            newData = input("Input new last name: ").capitalize()
                             Change_Student_Data(row, newData, 2, temp)
                         case 'd' | 'D':
                             invalidInput = False

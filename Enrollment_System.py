@@ -253,13 +253,13 @@ def Main_Menu():
         match input("Input: "):
             case 'e' | 'E':
                 invalidInput = False
-                studentProfile.append(input("First Name: "))
-                userMiddleName = input("Middle Name (0 if not applicable): ")
+                studentProfile.append(input("First Name: ").capitalize())
+                userMiddleName = input("Middle Name (0 if not applicable): ").capitalize()
                 if userMiddleName != "0":
                     studentProfile.append(userMiddleName)
                 else:
                     studentProfile.append("N/A")
-                studentProfile.append(input("Last Name: "))
+                studentProfile.append(input("Last Name: ").capitalize())
                 while not correctDate:
                     userBirthdate = input("Birthdate (mm/dd/yyyy): ")
                     #Checks whether the input is the correct date format
