@@ -439,6 +439,8 @@ if __name__ == "__main__":
     File_Check_And_Recover(secondSemesterCSV)
     File_Check_And_Recover(enrollmentReferenceCSV)
 
+    # Checks if a hidden backup folder is already in the directory 
+    # if not it will create one and backup everyfile into it
     if not os.path.isdir('.Backup'):
         os.mkdir('.Backup')
         FILE_ATTRIBUTE_HIDDEN = 0x02

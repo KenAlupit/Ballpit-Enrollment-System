@@ -493,7 +493,9 @@ def Main_Menu():
 if __name__ == "__main__":
     File_Check_And_Recover(enrollmentReferenceCSV)
     File_Check_And_Recover(studentProfileCSV)
-
+    
+    # Checks if a hidden backup folder is already in the directory 
+    # if not it will create one and backup everyfile into it
     if not os.path.isdir('.Backup'):
         os.mkdir('.Backup')
         FILE_ATTRIBUTE_HIDDEN = 0x02
