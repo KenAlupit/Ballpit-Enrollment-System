@@ -370,14 +370,11 @@ def Login():
             Print_String_With_Format("incorrect password")
     return successfulLogin
 
-def Change_Student_Data(row, data, index, list):
+def Change_Student_Data(row, data, index, list1):
     # Modifies a detail from the given student profile
-    list.append(row)
+    list1.append(row)
     row[index] = data
-    Overwrite_To_CSV(studentProfileCSV, list)
-    Backup(studentProfileCSV)
-    Print_String_With_Format("Sucessfully Modified")
-    return
+    return list1
 
 def Modify_Menu():
     temp = list()
@@ -386,9 +383,10 @@ def Modify_Menu():
     with open(studentProfileCSV, 'r') as studentFile:
         studentFileReader = csv.reader(studentFile)
         for row in studentFileReader:
-            if studentFileReader.line_num == 1:
+            Print_String_With_Format("Select data to change:")
+            if row[8] != inputID:
                 temp.append(row)
-            if row[8] == inputID:
+            elif row[8] == inputID:
                 invalidID = False
                 Search(inputID, 8)
                 while invalidInput:
@@ -398,46 +396,48 @@ def Modify_Menu():
                         case 'a' | 'A':
                             invalidInput = False
                             newData = input("Input new first name: ").capitalize()
-                            Change_Student_Data(row, newData, 0, temp)
+                            temp = Change_Student_Data(row, newData, 0, temp)
                         case 'b' | 'B':
                             invalidInput = False
                             newData = input("Input new middle name (0 if not applicable): ").capitalize()
                             if newData != "0":
-                                Change_Student_Data(row, newData, 1, temp)
+                                temp = Change_Student_Data(row, newData, 1, temp)
                             else:
-                                Change_Student_Data(row, "N/A", 1, temp)
+                                temp = Change_Student_Data(row, "N/A", 1, temp)
                         case 'c' | 'C':
                             invalidInput = False
                             newData = input("Input new last name: ").capitalize()
-                            Change_Student_Data(row, newData, 2, temp)
+                            temp = Change_Student_Data(row, newData, 2, temp)
                         case 'd' | 'D':
                             invalidInput = False
-                            Change_Student_Data(row, Birthdate_Input(), 3, temp)
+                            temp = Change_Student_Data(row, Birthdate_Input(), 3, temp)
                         case 'e' | 'E':
                             invalidInput = False
                             Change_Student_Data(row, Sex_Input(), 4, temp)
                         case 'f' | 'F':
                             invalidInput = False
-                            Change_Student_Data(row, Course_Input(), 5, temp)
+                            temp = Change_Student_Data(row, Course_Input(), 5, temp)
                         case 'g' | 'G':
                             invalidInput = False
-                            Change_Student_Data(row, Semester_Input(), 6, temp)
+                            temp = Change_Student_Data(row, Semester_Input(), 6, temp)
                         case 'h' | 'H':
                             invalidInput = False
-                            Change_Student_Data(row, Enrollment_Status_Input(), 7, temp)
+                            temp = Change_Student_Data(row, Enrollment_Status_Input(), 7, temp)
                         case 'i' | 'I':
                             invalidInput = False
-                            Change_Student_Data(row, ID_Input(), 8, temp)
+                            temp = Change_Student_Data(row, ID_Input(), 8, temp)
                         case 'j' | 'J':            
                             Main_Menu()
                         case _:
                             invalidInput = True
                             Print_Invalid_Input() 
-                break 
             else:
                 invalidID = True 
         if invalidID:
             Print_String_With_Format("ID not found")
+        Overwrite_To_CSV(studentProfileCSV, temp)
+        Backup(studentProfileCSV)
+        Print_String_With_Format("Sucessfully Modified")
         if not Back_To_Main_Menu():
             Modify_Menu()  
     return
@@ -445,15 +445,23 @@ def Modify_Menu():
 def Delete_Student():
     temp = list()
     inputID = ID_Input()
+    invalidID = True
     with open(studentProfileCSV, 'r') as studentFile:
         studentFileReader = csv.reader(studentFile)
         for row in studentFileReader:
             temp.append(row)
             if row[8] == inputID:
-                temp.remove(row)
+                invalidID = False 
+                if Login():
+                    temp.remove(row)
+               
+            
     Overwrite_To_CSV(studentProfileCSV, temp)
     Backup(studentProfileCSV)
-    Print_String_With_Format("Deleted")
+    if invalidID:
+        Print_String_With_Format("ID not found") 
+    else:
+        Print_String_With_Format("Deleted")
     if not Back_To_Main_Menu():
         Delete_Student()
     return
